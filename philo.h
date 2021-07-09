@@ -1,5 +1,5 @@
-#ifndef PHILO_PHILO_H
-#define PHILO_PHILO_H
+#ifndef PHILO_H
+# define PHILO_H
 
 // memset, printf, malloc, free, write,
 //usleep, gettimeofday, pthread_create,
@@ -7,33 +7,41 @@
 //pthread_mutex_destroy, pthread_mutex_lock,
 //pthread_mutex_unlock
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <pthread.h>
-#include <string.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <sys/time.h>
+# include <pthread.h>
+# include <string.h>
 
-typedef struct 		s_philo
+typedef struct s_philo
 {
-	pthread_t 		thread;
-	pthread_mutex_t *left;
-	pthread_mutex_t *right;
-	int 			number;
-	int 			status;
-	int 			time_eats;
+	pthread_t		thread;
+	pthread_mutex_t	*left;
+	pthread_mutex_t	*right;
+	int				number;
+	int				status;
+	int				time_eats;
+	void			*data;
 }					t_philo;
 
-typedef struct		s_data
+typedef struct s_data
 {
+	t_philo			*philos;
+	pthread_mutex_t	*forks;
+	struct timeval	*start;
 	unsigned int	n_of_philos;
-	unsigned int 	time_to_die;
-	unsigned int 	time_to_eat;
-	unsigned int 	time_to_sleep;
+	unsigned int	time_to_die;
+	unsigned int	time_to_eat;
+	unsigned int	time_to_sleep;
 	int				count_eats;
-	int				status;
+	int				correct;
+	int				die;
+	pthread_mutex_t	*print_mutex;
 }					t_data;
 
-int	ft_atoi(const char *nptr);
+int		ft_atoi(const char *nptr);
+void	ft_usleep(unsigned int milliseconds);
+void	*actions(void *arg);
 
 #endif

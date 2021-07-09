@@ -26,3 +26,8 @@ int	ft_atoi(const char *nptr)
 		return (min - 1);
 	return (res);
 }
+
+void	ft_usleep(unsigned int milliseconds)
+{
+	usleep(milliseconds * 1000);
+}

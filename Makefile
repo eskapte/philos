@@ -27,8 +27,8 @@ re:
 	make
 
 norm:
-	norminette *.c
-	norminette *.h
+	python3 -m norminette *.c
+	python3 -m norminette *.h
 
 .phony:
 	all clean fclean re norm
