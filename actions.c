@@ -4,19 +4,15 @@ void	eating(void *arg)
 {
 	t_philo			*philo;
 	t_data			*data;
-	long			del_time;
-	struct timeval	cur_time;
 
 	philo = (t_philo *)arg;
 	pthread_mutex_lock(philo->right);
 	pthread_mutex_lock(philo->left);
 	data = (t_data *)philo->data;
-	gettimeofday(&cur_time, NULL);
-	del_time = (cur_time.tv_usec - data->start->tv_usec) * 1000;
+	philo->last_eat = get_time(NULL);
 	pthread_mutex_lock(data->print_mutex);
-	printf("%ld %d взял вилку\n", del_time, philo->number);
-	del_time = (cur_time.tv_usec - data->start->tv_usec) * 1000;
-	printf("%ld %d ест\n", del_time, philo->number);
+	printf("%ld %d взял вилку\n", get_time(data->start), philo->number);
+	printf("%ld %d ест\n", get_time(data->start), philo->number);
 	pthread_mutex_unlock(data->print_mutex);
 	ft_usleep(data->time_to_eat);
 	pthread_mutex_unlock(philo->right);
@@ -27,15 +23,11 @@ void	sleeping(void *arg)
 {
 	t_philo			*philo;
 	t_data			*data;
-	long			del_time;
-	struct timeval	cur_time;
 
 	philo = (t_philo *)arg;
 	data = (t_data *)philo->data;
-	gettimeofday(&cur_time, NULL);
-	del_time = (cur_time.tv_usec - data->start->tv_usec) * 1000;
 	pthread_mutex_lock(data->print_mutex);
-	printf("%ld %d спит\n", del_time, philo->number);
+	printf("%ld %d спит\n", get_time(data->start), philo->number);
 	pthread_mutex_unlock(data->print_mutex);
 	ft_usleep(data->time_to_sleep);
 }
@@ -43,23 +35,30 @@ void	sleeping(void *arg)
 void	thinking(t_philo *philo)
 {
 	t_data			*data;
-	long			del_time;
-	struct timeval	cur_time;
 
 	data = (t_data *)philo->data;
-	gettimeofday(&cur_time, NULL);
-	del_time = (cur_time.tv_usec - data->start->tv_usec) * 1000;
 	pthread_mutex_lock(data->print_mutex);
-	printf("%ld %d думает\n", del_time, philo->number);
+	printf("%ld %d думает\n", get_time(data->start), philo->number);
 	pthread_mutex_unlock(data->print_mutex);
 }
 
 void	*actions(void *arg)
 {
 	t_philo	*philo;
+	t_data	*data;
 
 	philo = (t_philo *)arg;
-	eating(philo);
-	sleeping(philo);
-	thinking(philo);
+	data = (t_data *)philo->data;
+	philo->last_eat = get_time(NULL);
+	while (get_time(NULL) - philo->last_eat < data->time_to_die
+		&& !data->die)
+	{
+		eating(philo);
+		sleeping(philo);
+		thinking(philo);
+	}
+	data->die = 1;
+	pthread_mutex_lock(data->print_mutex);
+	printf("philo %d is died :(\n", philo->number);
+	return (NULL);
 }

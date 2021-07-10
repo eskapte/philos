@@ -2,11 +2,11 @@ NAME =	philo
 
 CC =	gcc
 
-SRC = philo.c helpers.c
+SRC = philo.c helpers.c actions.c time_helpers.c
 
 OBJS = $(SRC:.c=.o)
 
-CFLAGS = -Wall -Wextra -Werror -pthread
+CFLAGS = -Wall -Wextra -Werror -pthread -g
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

@@ -22,6 +22,7 @@ typedef struct s_philo
 	int				number;
 	int				status;
 	int				time_eats;
+	long			last_eat;
 	void			*data;
 }					t_philo;
 
@@ -30,6 +31,7 @@ typedef struct s_data
 	t_philo			*philos;
 	pthread_mutex_t	*forks;
 	struct timeval	*start;
+	struct timezone	*start_tz;
 	unsigned int	n_of_philos;
 	unsigned int	time_to_die;
 	unsigned int	time_to_eat;
@@ -43,5 +45,6 @@ typedef struct s_data
 int		ft_atoi(const char *nptr);
 void	ft_usleep(unsigned int milliseconds);
 void	*actions(void *arg);
+long	get_time(struct timeval *time);
 
 #endif
