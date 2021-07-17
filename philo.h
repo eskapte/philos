@@ -20,7 +20,6 @@ typedef struct s_philo
 	pthread_mutex_t	*left;
 	pthread_mutex_t	*right;
 	int				number;
-	int				status;
 	int				time_eats;
 	long			last_eat;
 	void			*data;
@@ -30,6 +29,7 @@ typedef struct s_data
 {
 	t_philo			*philos;
 	pthread_mutex_t	*forks;
+	unsigned int	finished;
 	struct timeval	*start;
 	struct timezone	*start_tz;
 	unsigned int	n_of_philos;
@@ -39,6 +39,7 @@ typedef struct s_data
 	int				count_eats;
 	int				correct;
 	int				die;
+	pthread_mutex_t	*die_mutex;
 	pthread_mutex_t	*print_mutex;
 }					t_data;
 
@@ -46,5 +47,7 @@ int		ft_atoi(const char *nptr);
 void	ft_usleep(unsigned int milliseconds);
 void	*actions(void *arg);
 long	get_time(struct timeval *time);
+void	all_detach(t_data *data);
+void	all_free(t_data *data);
 
 #endif

@@ -26,3 +26,23 @@ int	ft_atoi(const char *nptr)
 		return (min - 1);
 	return (res);
 }
+
+void	all_free(t_data *data)
+{
+	all_detach(data);
+	if (data->philos)
+		free(data->philos);
+	if (data->forks)
+		free(data->forks);
+	if (data->start && data->start_tz)
+	{
+		free(data->start);
+		free(data->start_tz);
+	}
+	pthread_mutex_destroy(data->print_mutex);
+	pthread_mutex_destroy(data->die_mutex);
+	if (data->print_mutex)
+		free(data->print_mutex);
+	if (data->die_mutex)
+		free(data->die_mutex);
+}

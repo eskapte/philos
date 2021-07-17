@@ -35,10 +35,16 @@ void	philos_init(t_data *data)
 	while (i < (int)data->n_of_philos)
 	{
 		pthread_mutex_init(&data->forks[i], NULL);
-		if (i == 0)
-			data->philos[i].right = &data->forks[data->n_of_philos - 1];
+		data->philos[i].time_eats = 0;
+		if (data->n_of_philos > 1)
+		{
+			if (i == 0)
+				data->philos[i].right = &data->forks[data->n_of_philos - 1];
+			else
+				data->philos[i].right = &data->forks[i - 1];
+		}
 		else
-			data->philos[i].right = &data->forks[i - 1];
+			data->philos[i].right = NULL;
 		data->philos[i].left = &data->forks[i];
 		data->philos[i].number = i + 1;
 		data->philos[i].data = (void *)data;
@@ -53,17 +59,35 @@ void	simulation(t_data *data)
 	philos_init(data);
 	data->start = (struct timeval *)malloc(sizeof(struct timeval));
 	data->start_tz = (struct timezone *)malloc(sizeof(struct timezone));
+	if (!data->start || !data->start_tz)
+	{
+		all_free(data);
+		return ;
+	}
 	gettimeofday(data->start, data->start_tz);
 	i = 0;
 	while (i < data->n_of_philos)
 	{
 		pthread_create(&data->philos[i].thread, NULL, actions,
-			  (void *) &data->philos[i]);
+			(void *) &data->philos[i]);
+		usleep(50);
 		i++;
 	}
+	pthread_mutex_lock(data->die_mutex);
+}
+
+void	all_detach(t_data *data)
+{
+	unsigned int	i;
+
 	i = 0;
 	while (i < data->n_of_philos)
-		pthread_join(data->philos[i++].thread, (void **) NULL);
+	{
+		pthread_detach(data->philos[i].thread);
+		pthread_mutex_destroy(data->philos[i].left);
+		pthread_mutex_destroy(data->philos[i].right);
+		i++;
+	}
 }
 
 int	main(int argc, char *argv[])
@@ -73,11 +97,15 @@ int	main(int argc, char *argv[])
 	if (argc < 5 || argc > 6)
 		return (0);
 	data.correct = check_data(&data, argv, argc);
-	printf("%d\n", data.correct);
 	if (data.correct == -1)
 		return (0);
 	data.die = 0;
 	data.print_mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+	data.die_mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(data.print_mutex, NULL);
+	pthread_mutex_init(data.die_mutex, NULL);
 	simulation(&data);
+	pthread_mutex_lock(data.die_mutex);
+	all_free(&data);
+	return (0);
 }

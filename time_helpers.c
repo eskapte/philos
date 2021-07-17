@@ -2,7 +2,15 @@
 
 void	ft_usleep(unsigned int milliseconds)
 {
-	usleep(milliseconds * 1000);
+	long	cur_time;
+	long	start;
+
+	start = get_time(NULL);
+	cur_time = get_time(NULL);
+	while (cur_time - start < milliseconds)
+	{
+		cur_time = get_time(NULL);
+	}
 }
 
 long	get_time(struct timeval *time)
