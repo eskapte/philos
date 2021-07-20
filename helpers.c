@@ -29,7 +29,11 @@ int	ft_atoi(const char *nptr)
 
 void	all_free(t_data *data)
 {
-	all_detach(data);
+	unsigned int	i;
+
+	i = 0;
+	while (i < data->n_of_philos)
+		pthread_mutex_destroy(&data->forks[i++]);
 	if (data->philos)
 		free(data->philos);
 	if (data->forks)
@@ -39,10 +43,9 @@ void	all_free(t_data *data)
 		free(data->start);
 		free(data->start_tz);
 	}
-	pthread_mutex_destroy(data->print_mutex);
-	pthread_mutex_destroy(data->die_mutex);
 	if (data->print_mutex)
+	{
+		pthread_mutex_destroy(data->print_mutex);
 		free(data->print_mutex);
-	if (data->die_mutex)
-		free(data->die_mutex);
+	}
 }

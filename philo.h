@@ -1,12 +1,6 @@
 #ifndef PHILO_H
 # define PHILO_H
 
-// memset, printf, malloc, free, write,
-//usleep, gettimeofday, pthread_create,
-//pthread_detach, pthread_join, pthread_mutex_init,
-//pthread_mutex_destroy, pthread_mutex_lock,
-//pthread_mutex_unlock
-
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
@@ -39,15 +33,15 @@ typedef struct s_data
 	int				count_eats;
 	int				correct;
 	int				die;
-	pthread_mutex_t	*die_mutex;
 	pthread_mutex_t	*print_mutex;
+	pthread_t		watcher;
 }					t_data;
 
 int		ft_atoi(const char *nptr);
 void	ft_usleep(unsigned int milliseconds);
 void	*actions(void *arg);
 long	get_time(struct timeval *time);
-void	all_detach(t_data *data);
 void	all_free(t_data *data);
+void	*die_watcher(void *arg);
 
 #endif

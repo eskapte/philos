@@ -70,24 +70,11 @@ void	simulation(t_data *data)
 	{
 		pthread_create(&data->philos[i].thread, NULL, actions,
 			(void *) &data->philos[i]);
-		usleep(50);
-		i++;
-	}
-	pthread_mutex_lock(data->die_mutex);
-}
-
-void	all_detach(t_data *data)
-{
-	unsigned int	i;
-
-	i = 0;
-	while (i < data->n_of_philos)
-	{
 		pthread_detach(data->philos[i].thread);
-		pthread_mutex_destroy(data->philos[i].left);
-		pthread_mutex_destroy(data->philos[i].right);
 		i++;
 	}
+	ft_usleep(30);
+	pthread_create(&data->watcher, NULL, die_watcher, (void *)data);
 }
 
 int	main(int argc, char *argv[])
@@ -100,12 +87,12 @@ int	main(int argc, char *argv[])
 	if (data.correct == -1)
 		return (0);
 	data.die = 0;
+	data.finished = 0;
 	data.print_mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
-	data.die_mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(data.print_mutex, NULL);
-	pthread_mutex_init(data.die_mutex, NULL);
 	simulation(&data);
-	pthread_mutex_lock(data.die_mutex);
+	pthread_join(data.watcher, NULL);
+	pthread_detach(data.watcher);
 	all_free(&data);
 	return (0);
 }

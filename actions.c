@@ -1,11 +1,9 @@
 #include "philo.h"
 
-void	eating(void *arg)
+static	void	lock_forks(t_philo *philo)
 {
-	t_philo			*philo;
-	t_data			*data;
+	t_data	*data;
 
-	philo = (t_philo *)arg;
 	data = (t_data *)philo->data;
 	if (philo->right)
 	{
@@ -19,6 +17,16 @@ void	eating(void *arg)
 		printf("%ld %d has taken a fork\n", get_time(data->start),
 			   philo->number);
 	}
+}
+
+void	eating(void *arg)
+{
+	t_philo			*philo;
+	t_data			*data;
+
+	philo = (t_philo *)arg;
+	data = (t_data *)philo->data;
+	lock_forks(philo);
 	pthread_mutex_lock(data->print_mutex);
 	if (philo->right && philo->left)
 	{
@@ -65,24 +73,23 @@ void	*actions(void *arg)
 	philo = (t_philo *)arg;
 	data = (t_data *)philo->data;
 	philo->last_eat = get_time(NULL);
+	if (philo->number % 2 == 0)
+		ft_usleep(30);
 	while (get_time(NULL) - philo->last_eat < data->time_to_die
 		&& !data->die)
 	{
 		if (data->count_eats >= 0 && philo->time_eats >= data->count_eats)
 		{
-			pthread_detach(philo->thread);
 			data->finished++;
 			if (data->finished >= data->n_of_philos)
-				pthread_mutex_unlock(data->die_mutex);
+				data->die = 1;
 			return (NULL);
 		}
 		eating(philo);
 		sleeping(philo);
 		thinking(philo);
 	}
-	data->die = 1;
-	pthread_mutex_lock(data->print_mutex);
-	printf("%ld %d died\n", get_time(data->start), philo->number);
-	pthread_mutex_unlock(data->die_mutex);
+	if (get_time(NULL) - philo->last_eat > data->time_to_die)
+		data->die = 1;
 	return (NULL);
 }
