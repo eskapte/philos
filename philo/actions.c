@@ -74,7 +74,7 @@ void	*actions(void *arg)
 	data = (t_data *)philo->data;
 	philo->last_eat = get_time(NULL);
 	if (philo->number % 2 == 0)
-		ft_usleep(30);
+		usleep(30);
 	while (get_time(NULL) - philo->last_eat < data->time_to_die
 		&& !data->die)
 	{

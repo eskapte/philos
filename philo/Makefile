@@ -6,7 +6,7 @@ SRC = philo.c helpers.c actions.c time_helpers.c watcher.c
 
 OBJS = $(SRC:.c=.o)
 
-CFLAGS = -Wall -Wextra -Werror -pthread -g -O3
+CFLAGS = -Wall -Wextra -Werror -pthread -g -O2
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

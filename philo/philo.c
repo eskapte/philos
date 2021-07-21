@@ -73,7 +73,7 @@ void	simulation(t_data *data)
 		pthread_detach(data->philos[i].thread);
 		i++;
 	}
-	ft_usleep(30);
+	usleep(50);
 	pthread_create(&data->watcher, NULL, die_watcher, (void *)data);
 }
 

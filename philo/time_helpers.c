@@ -3,14 +3,12 @@
 void	ft_usleep(unsigned int milliseconds)
 {
 	long	cur_time;
-	long	start;
+	long	need_time;
 
-	start = get_time(NULL);
 	cur_time = get_time(NULL);
-	while (cur_time - start < milliseconds)
-	{
-		cur_time = get_time(NULL);
-	}
+	need_time = cur_time + milliseconds;
+	while (get_time(NULL) < need_time)
+		usleep(50);
 }
 
 long	get_time(struct timeval *time)
